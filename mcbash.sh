@@ -148,18 +148,16 @@ EOF
     cat <<EOF > "start.sh"
 #!/bin/bash
 source variables.txt
-#  Start server in
-tmux new-session -d -s "\$tmux_session_name" "java \$JAVA_ARGS \$SERVER_DIR/\$JAR_FILE nogui"
+# Start server in
+tmux new-session -d -s "$tmux_session_name" "java $JAVA_ARGS $SERVER_DIR/$JAR_FILE nogui > server_error.log 2>&1"
 if [ $? -eq 0 ]; then
-    echo "Server started in tmux session: $folder_name."
+    echo "Server started in tmux session: $tmux_session_name."
     echo "Errors and output are being logged to server_error.log."
-    echo "To attach to the server session, use: tmux attach-session -t $folder_name"
+    echo "To attach to the server session, use: tmux attach-session -t $tmux_session_name"
 else
     echo "Failed to start server. Check tmux and server_error.log for errors."
 fi
-EOF
-    chmod +x "start.sh"
-    echo "Server setup complete in folder: $folder_name"
+
 }
 
 # Function to start the server
