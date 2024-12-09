@@ -148,8 +148,11 @@ EOF
     cat <<EOF > "start.sh"
 #!/bin/bash
 source variables.txt
-# Start server in
-tmux new-session -d -s "$tmux_session_name" "java $JAVA_ARGS $SERVER_DIR/$JAR_FILE nogui > server_error.log 2>&1"
+
+# Start the server in tmux, but also log the output to a file.
+tmux new-session -d -s "$tmux_session_name" \
+  "java $JAVA_ARGS $SERVER_DIR/$JAR_FILE nogui 2>&1 | tee -a server_error.log"
+
 if [ $? -eq 0 ]; then
     echo "Server started in tmux session: $tmux_session_name."
     echo "Errors and output are being logged to server_error.log."
@@ -158,14 +161,6 @@ else
     echo "Failed to start server. Check tmux and server_error.log for errors."
 fi
 
-}
-
-# Function to start the server
-start_server() {
-    read -rp "Enter the server directory name: " folder_name
-    cd "$folder_name" || exit
-    tmux_session_name=$(basename "$folder_name")
-    tmux new-session -d -s "$tmux_session_name" "java $JAVA_ARGS fabric-server.jar nogui"
 }
 
 # Function to stop the server
